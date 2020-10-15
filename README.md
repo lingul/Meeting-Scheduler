@@ -23,4 +23,5 @@ Invited participants can vote on meetings.
 View event
 The host of the event can see the votes and who voted what.
 
-To use: Download the project and setup the database. Just run the file metadata.ddl in mysql and the database is set. Make sure you have a web-server. If you want to have a look at my ER-digram it´s called modaldb.png and can be found under img. 
+To use: 
+Download the project and setup the database. Just run the file metadata.ddl in mysql and the database is set. Make sure you have a web-server. If you want to have a look at my ER-digram it´s called modaldb.png and can be found under img. 
