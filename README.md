@@ -1,4 +1,4 @@
-Short description: This is a web based application where you can setup meetings and invite pople to vote on the meetings or ask them to comment/suggest another time. When developing I used a mac. As my server I used apache web server. For the database I used mysql version 8. And I have written my code in php with javascript.
+Short description: This is a web based application where you can setup meetings and invite people to vote on the meetings or ask them to comment/suggest another time. When developing I used a mac. As my server I used apache web server. For the database I used mysql version 8. And I have written my code in php with javascript.
 
 Home Page: Application home page where the calendar resides and events are displayed.
 
