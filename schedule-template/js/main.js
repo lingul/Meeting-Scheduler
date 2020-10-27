@@ -3,385 +3,385 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"];
 
 jQuery(document).ready(function($){
-	var transitionEnd = 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend';
-	var transitionsSupported = ( $('.csstransitions').length > 0 );
-	//if browser does not support transitions - use a different event to trigger them
-	if( !transitionsSupported ) transitionEnd = 'noTransition';
-	
+    var transitionEnd = 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend';
+    var transitionsSupported = ( $('.csstransitions').length > 0 );
+    //if browser does not support transitions - use a different event to trigger them
+    if( !transitionsSupported ) transitionEnd = 'noTransition';
+
     $('#last_wk_btn').on('click', function() {
-            currentWeek -= 1;
-            displayWeek(currentWeek);
+        currentWeek -= 1;
+        displayWeek(currentWeek);
     });
-    
+
     $('#next_wk_btn').on('click', function() {
         currentWeek += 1;
         displayWeek(currentWeek);
     });
 
-	
-	//should add a loding while the events are organized 
-	function SchedulePlan( element ) {
-		this.element = element;
-		this.timeline = this.element.find('.timeline');
-		this.timelineItems = this.timeline.find('li');
-		this.timelineItemsNumber = this.timelineItems.length;
-		this.timelineStart = getScheduleTimestamp(this.timelineItems.eq(0).attr('id'));
-		//need to store delta (in our case half hour) timestamp
-		this.timelineUnitDuration = getScheduleTimestamp(this.timelineItems.eq(1).attr('id')) - getScheduleTimestamp(this.timelineItems.eq(0).attr('id'));
 
-		this.eventsWrapper = this.element.find('.events');
-		this.eventsGroup = this.eventsWrapper.find('.events-group');
-		this.singleEvents = this.eventsGroup.find('.single-event');
-		this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
+    //should add a loding while the events are organized
+    function SchedulePlan( element ) {
+        this.element = element;
+        this.timeline = this.element.find('.timeline');
+        this.timelineItems = this.timeline.find('li');
+        this.timelineItemsNumber = this.timelineItems.length;
+        this.timelineStart = getScheduleTimestamp(this.timelineItems.eq(0).attr('id'));
+        //need to store delta (in our case half hour) timestamp
+        this.timelineUnitDuration = getScheduleTimestamp(this.timelineItems.eq(1).attr('id')) - getScheduleTimestamp(this.timelineItems.eq(0).attr('id'));
 
-		this.modal = this.element.find('.event-modal');
-		this.modalHeader = this.modal.find('.header');
-		this.modalHeaderBg = this.modal.find('.header-bg');
-		this.modalBody = this.modal.find('.body'); 
-		this.modalBodyBg = this.modal.find('.body-bg'); 
-		this.modalMaxWidth = 800;
-		this.modalMaxHeight = 480;
+        this.eventsWrapper = this.element.find('.events');
+        this.eventsGroup = this.eventsWrapper.find('.events-group');
+        this.singleEvents = this.eventsGroup.find('.single-event');
+        this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
 
-		this.animating = false;
+        this.modal = this.element.find('.event-modal');
+        this.modalHeader = this.modal.find('.header');
+        this.modalHeaderBg = this.modal.find('.header-bg');
+        this.modalBody = this.modal.find('.body');
+        this.modalBodyBg = this.modal.find('.body-bg');
+        this.modalMaxWidth = 800;
+        this.modalMaxHeight = 480;
 
-		this.initSchedule();
-	}
+        this.animating = false;
+
+        this.initSchedule();
+    }
 
 	SchedulePlan.prototype.initSchedule = function() {
         this.scheduleReset();
-		this.initEvents();
-	};
+        this.initEvents();
+    };
 
-	SchedulePlan.prototype.scheduleReset = function() {
-		var mq = this.mq();
-		if( mq == 'desktop' && !this.element.hasClass('js-full') ) {
-			//in this case you are on a desktop version (first load or resize from mobile)
-			this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
-			this.element.addClass('js-full');
-			this.placeEvents();
-			this.element.hasClass('modal-is-open') && this.checkEventModal();
-		} else if(  mq == 'mobile' && this.element.hasClass('js-full') ) {
-			//in this case you are on a mobile version (first load or resize from desktop)
-			this.element.removeClass('js-full loading');
-			this.eventsGroup.children('ul').add(this.singleEvents).removeAttr('style');
-			this.eventsWrapper.children('.grid-line').remove();
-			this.element.hasClass('modal-is-open') && this.checkEventModal();
-		} else if( mq == 'desktop' && this.element.hasClass('modal-is-open')){
-			//on a mobile version with modal open - need to resize/move modal window
-			this.checkEventModal('desktop');
-			this.element.removeClass('loading');
-		} else {
-			this.element.removeClass('loading');
-		}
-	};
+    SchedulePlan.prototype.scheduleReset = function() {
+        var mq = this.mq();
+        if( mq == 'desktop' && !this.element.hasClass('js-full') ) {
+            //in this case you are on a desktop version (first load or resize from mobile)
+            this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
+            this.element.addClass('js-full');
+            this.placeEvents();
+            this.element.hasClass('modal-is-open') && this.checkEventModal();
+        } else if(  mq == 'mobile' && this.element.hasClass('js-full') ) {
+            //in this case you are on a mobile version (first load or resize from desktop)
+            this.element.removeClass('js-full loading');
+            this.eventsGroup.children('ul').add(this.singleEvents).removeAttr('style');
+            this.eventsWrapper.children('.grid-line').remove();
+            this.element.hasClass('modal-is-open') && this.checkEventModal();
+        } else if( mq == 'desktop' && this.element.hasClass('modal-is-open')){
+            //on a mobile version with modal open - need to resize/move modal window
+            this.checkEventModal('desktop');
+            this.element.removeClass('loading');
+        } else {
+            this.element.removeClass('loading');
+        }
+    };
 
-	SchedulePlan.prototype.initEvents = function() {
-		var self = this;
+    SchedulePlan.prototype.initEvents = function() {
+        var self = this;
 
-		this.singleEvents.each(function(){
-			//create the .event-date element for each event
-			var durationLabel = '<span class="event-date">'+ militaryTo12HourConversion($(this).data('start')) + ' - ' + militaryTo12HourConversion($(this).data('end')) + '</span>';
-			$(this).children('a').prepend($(durationLabel));
+        this.singleEvents.each(function(){
+            //create the .event-date element for each event
+            var durationLabel = '<span class="event-date">'+ $(this).data('start') + ' - ' + $(this).data('end') + '</span>';
+            $(this).children('a').prepend($(durationLabel));
 
-			//detect click on the event and open the modal
-			$(this).on('click', 'a', function(event){
-				event.preventDefault();
-				if( !self.animating ) self.openModal($(this));
-			});
-		});
+            //detect click on the event and open the modal
+            $(this).on('click', 'a', function(event){
+                event.preventDefault();
+                if( !self.animating ) self.openModal($(this));
+            });
+        });
 
-		//close modal window
-		this.modal.on('click', '.close', function(event){
-			event.preventDefault();
-			if( !self.animating ) self.closeModal(self.eventsGroup.find('.selected-event'));
-		});
-		this.element.on('click', '.cover-layer', function(event){
-			if( !self.animating && self.element.hasClass('modal-is-open') ) self.closeModal(self.eventsGroup.find('.selected-event'));
-		});
-	};
+        //close modal window
+        this.modal.on('click', '.close', function(event){
+            event.preventDefault();
+            if( !self.animating ) self.closeModal(self.eventsGroup.find('.selected-event'));
+        });
+        this.element.on('click', '.cover-layer', function(event){
+            if( !self.animating && self.element.hasClass('modal-is-open') ) self.closeModal(self.eventsGroup.find('.selected-event'));
+        });
+    };
 
-	SchedulePlan.prototype.placeEvents = function() {
-		var self = this;
-		this.singleEvents.each(function(){
-			//place each event in the grid -> need to set top position and height
-			var start = getScheduleTimestamp($(this).attr('data-start')),
-				duration = getScheduleTimestamp($(this).attr('data-end')) - start;
+    SchedulePlan.prototype.placeEvents = function() {
+        var self = this;
+        this.singleEvents.each(function(){
+            //place each event in the grid -> need to set top position and height
+            var start = getScheduleTimestamp($(this).attr('data-start')),
+                duration = getScheduleTimestamp($(this).attr('data-end')) - start;
 
-			var eventTop = self.eventSlotHeight*(start - self.timelineStart)/self.timelineUnitDuration,
-				eventHeight = self.eventSlotHeight*duration/self.timelineUnitDuration;
-			
-			$(this).css({
-				top: (eventTop-1) +'px',
-				height: (eventHeight+1)+'px'
-			});
-		});
+            var eventTop = self.eventSlotHeight*(start - self.timelineStart)/self.timelineUnitDuration,
+                eventHeight = self.eventSlotHeight*duration/self.timelineUnitDuration;
 
-		this.element.removeClass('loading');
-	};
+            $(this).css({
+                top: (eventTop-1) +'px',
+                height: (eventHeight+1)+'px'
+            });
+        });
 
-	SchedulePlan.prototype.openModal = function(event) {
-		var self = this;
-		var mq = self.mq();
-		this.animating = true;
+        this.element.removeClass('loading');
+    };
 
-		//update event name and time
-		this.modalHeader.find('.event-name').text(event.find('.event-name').text());
-		this.modalHeader.find('.event-date').text(event.find('.event-date').text());
-		this.modal.attr('data-event', event.parent().attr('data-event'));
+    SchedulePlan.prototype.openModal = function(event) {
+        var self = this;
+        var mq = self.mq();
+        this.animating = true;
 
-		//update event content
-		this.modalBody.find('.event-info').load(event.parent().attr('data-content')+'.html .event-info > *', function(data){
-			//once the event content has been loaded
-			self.element.addClass('content-loaded');
-		});
+        //update event name and time
+        this.modalHeader.find('.event-name').text(event.find('.event-name').text());
+        this.modalHeader.find('.event-date').text(event.find('.event-date').text());
+        this.modal.attr('data-event', event.parent().attr('data-event'));
 
-		this.element.addClass('modal-is-open');
+        //update event content
+        this.modalBody.find('.event-info').load(event.parent().attr('data-content')+'.html .event-info > *', function(data){
+            //once the event content has been loaded
+            self.element.addClass('content-loaded');
+        });
 
-		setTimeout(function(){
-			//fixes a flash when an event is selected - desktop version only
-			event.parent('li').addClass('selected-event');
-		}, 10);
+        this.element.addClass('modal-is-open');
 
-		if( mq == 'mobile' ) {
-			self.modal.one(transitionEnd, function(){
-				self.modal.off(transitionEnd);
-				self.animating = false;
-			});
-		} else {
-			var eventTop = event.offset().top - $(window).scrollTop(),
-				eventLeft = event.offset().left,
-				eventHeight = event.innerHeight(),
-				eventWidth = event.innerWidth();
+        setTimeout(function(){
+            //fixes a flash when an event is selected - desktop version only
+            event.parent('li').addClass('selected-event');
+        }, 10);
 
-			var windowWidth = $(window).width(),
-				windowHeight = $(window).height();
+        if( mq == 'mobile' ) {
+            self.modal.one(transitionEnd, function(){
+                self.modal.off(transitionEnd);
+                self.animating = false;
+            });
+        } else {
+            var eventTop = event.offset().top - $(window).scrollTop(),
+                eventLeft = event.offset().left,
+                eventHeight = event.innerHeight(),
+                eventWidth = event.innerWidth();
 
-			var modalWidth = ( windowWidth*.8 > self.modalMaxWidth ) ? self.modalMaxWidth : windowWidth*.8,
-				modalHeight = ( windowHeight*.8 > self.modalMaxHeight ) ? self.modalMaxHeight : windowHeight*.8;
+            var windowWidth = $(window).width(),
+                windowHeight = $(window).height();
 
-			var modalTranslateX = parseInt((windowWidth - modalWidth)/2 - eventLeft),
-				modalTranslateY = parseInt((windowHeight - modalHeight)/2 - eventTop);
-			
-			var HeaderBgScaleY = modalHeight/eventHeight,
-				BodyBgScaleX = (modalWidth - eventWidth);
+            var modalWidth = ( windowWidth*.8 > self.modalMaxWidth ) ? self.modalMaxWidth : windowWidth*.8,
+                modalHeight = ( windowHeight*.8 > self.modalMaxHeight ) ? self.modalMaxHeight : windowHeight*.8;
 
-			//change modal height/width and translate it
-			self.modal.css({
-				top: eventTop+'px',
-				left: eventLeft+'px',
-				height: modalHeight+'px',
-				width: modalWidth+'px',
-			});
-			transformElement(self.modal, 'translateY('+modalTranslateY+'px) translateX('+modalTranslateX+'px)');
+            var modalTranslateX = parseInt((windowWidth - modalWidth)/2 - eventLeft),
+                modalTranslateY = parseInt((windowHeight - modalHeight)/2 - eventTop);
 
-			//set modalHeader width
-			self.modalHeader.css({
-				width: eventWidth+'px',
-			});
-			//set modalBody left margin
-			self.modalBody.css({
-				marginLeft: eventWidth+'px',
-			});
+            var HeaderBgScaleY = modalHeight/eventHeight,
+                BodyBgScaleX = (modalWidth - eventWidth);
 
-			//change modalBodyBg height/width ans scale it
-			self.modalBodyBg.css({
-				height: eventHeight+'px',
-				width: '1px',
-			});
-			transformElement(self.modalBodyBg, 'scaleY('+HeaderBgScaleY+') scaleX('+BodyBgScaleX+')');
+            //change modal height/width and translate it
+            self.modal.css({
+                top: eventTop+'px',
+                left: eventLeft+'px',
+                height: modalHeight+'px',
+                width: modalWidth+'px',
+            });
+            transformElement(self.modal, 'translateY('+modalTranslateY+'px) translateX('+modalTranslateX+'px)');
 
-			//change modal modalHeaderBg height/width and scale it
-			self.modalHeaderBg.css({
-				height: eventHeight+'px',
-				width: eventWidth+'px',
-			});
-			transformElement(self.modalHeaderBg, 'scaleY('+HeaderBgScaleY+')');
-			
-			self.modalHeaderBg.one(transitionEnd, function(){
-				//wait for the  end of the modalHeaderBg transformation and show the modal content
-				self.modalHeaderBg.off(transitionEnd);
-				self.animating = false;
-				self.element.addClass('animation-completed');
-			});
-		}
+            //set modalHeader width
+            self.modalHeader.css({
+                width: eventWidth+'px',
+            });
+            //set modalBody left margin
+            self.modalBody.css({
+                marginLeft: eventWidth+'px',
+            });
 
-		//if browser do not support transitions -> no need to wait for the end of it
-		if( !transitionsSupported ) self.modal.add(self.modalHeaderBg).trigger(transitionEnd);
-	};
+            //change modalBodyBg height/width ans scale it
+            self.modalBodyBg.css({
+                height: eventHeight+'px',
+                width: '1px',
+            });
+            transformElement(self.modalBodyBg, 'scaleY('+HeaderBgScaleY+') scaleX('+BodyBgScaleX+')');
 
-	SchedulePlan.prototype.closeModal = function(event) {
-		var self = this;
-		var mq = self.mq();
+            //change modal modalHeaderBg height/width and scale it
+            self.modalHeaderBg.css({
+                height: eventHeight+'px',
+                width: eventWidth+'px',
+            });
+            transformElement(self.modalHeaderBg, 'scaleY('+HeaderBgScaleY+')');
 
-		this.animating = true;
+            self.modalHeaderBg.one(transitionEnd, function(){
+                //wait for the  end of the modalHeaderBg transformation and show the modal content
+                self.modalHeaderBg.off(transitionEnd);
+                self.animating = false;
+                self.element.addClass('animation-completed');
+            });
+        }
 
-		if( mq == 'mobile' ) {
-			this.element.removeClass('modal-is-open');
-			this.modal.one(transitionEnd, function(){
-				self.modal.off(transitionEnd);
-				self.animating = false;
-				self.element.removeClass('content-loaded');
-				event.removeClass('selected-event');
-			});
-		} else {
-			var eventTop = event.offset().top - $(window).scrollTop(),
-				eventLeft = event.offset().left,
-				eventHeight = event.innerHeight(),
-				eventWidth = event.innerWidth();
+        //if browser do not support transitions -> no need to wait for the end of it
+        if( !transitionsSupported ) self.modal.add(self.modalHeaderBg).trigger(transitionEnd);
+    };
 
-			var modalTop = Number(self.modal.css('top').replace('px', '')),
-				modalLeft = Number(self.modal.css('left').replace('px', ''));
+    SchedulePlan.prototype.closeModal = function(event) {
+        var self = this;
+        var mq = self.mq();
 
-			var modalTranslateX = eventLeft - modalLeft,
-				modalTranslateY = eventTop - modalTop;
+        this.animating = true;
 
-			self.element.removeClass('animation-completed modal-is-open');
+        if( mq == 'mobile' ) {
+            this.element.removeClass('modal-is-open');
+            this.modal.one(transitionEnd, function(){
+                self.modal.off(transitionEnd);
+                self.animating = false;
+                self.element.removeClass('content-loaded');
+                event.removeClass('selected-event');
+            });
+        } else {
+            var eventTop = event.offset().top - $(window).scrollTop(),
+                eventLeft = event.offset().left,
+                eventHeight = event.innerHeight(),
+                eventWidth = event.innerWidth();
 
-			//change modal width/height and translate it
-			this.modal.css({
-				width: eventWidth+'px',
-				height: eventHeight+'px'
-			});
-			transformElement(self.modal, 'translateX('+modalTranslateX+'px) translateY('+modalTranslateY+'px)');
-			
-			//scale down modalBodyBg element
-			transformElement(self.modalBodyBg, 'scaleX(0) scaleY(1)');
-			//scale down modalHeaderBg element
-			transformElement(self.modalHeaderBg, 'scaleY(1)');
+            var modalTop = Number(self.modal.css('top').replace('px', '')),
+                modalLeft = Number(self.modal.css('left').replace('px', ''));
 
-			this.modalHeaderBg.one(transitionEnd, function(){
-				//wait for the  end of the modalHeaderBg transformation and reset modal style
-				self.modalHeaderBg.off(transitionEnd);
-				self.modal.addClass('no-transition');
-				setTimeout(function(){
-					self.modal.add(self.modalHeader).add(self.modalBody).add(self.modalHeaderBg).add(self.modalBodyBg).attr('style', '');
-				}, 10);
-				setTimeout(function(){
-					self.modal.removeClass('no-transition');
-				}, 20);
+            var modalTranslateX = eventLeft - modalLeft,
+                modalTranslateY = eventTop - modalTop;
 
-				self.animating = false;
-				self.element.removeClass('content-loaded');
-				event.removeClass('selected-event');
-			});
-		}
+            self.element.removeClass('animation-completed modal-is-open');
 
-		//browser do not support transitions -> no need to wait for the end of it
-		if( !transitionsSupported ) self.modal.add(self.modalHeaderBg).trigger(transitionEnd);
-	}
+            //change modal width/height and translate it
+            this.modal.css({
+                width: eventWidth+'px',
+                height: eventHeight+'px'
+            });
+            transformElement(self.modal, 'translateX('+modalTranslateX+'px) translateY('+modalTranslateY+'px)');
 
-	SchedulePlan.prototype.mq = function(){
-		//get MQ value ('desktop' or 'mobile') 
-		var self = this;
-		return window.getComputedStyle(this.element.get(0), '::before').getPropertyValue('content').replace(/["']/g, '');
-	};
+            //scale down modalBodyBg element
+            transformElement(self.modalBodyBg, 'scaleX(0) scaleY(1)');
+            //scale down modalHeaderBg element
+            transformElement(self.modalHeaderBg, 'scaleY(1)');
 
-	SchedulePlan.prototype.checkEventModal = function(device) {
-		this.animating = true;
-		var self = this;
-		var mq = this.mq();
+            this.modalHeaderBg.one(transitionEnd, function(){
+                //wait for the  end of the modalHeaderBg transformation and reset modal style
+                self.modalHeaderBg.off(transitionEnd);
+                self.modal.addClass('no-transition');
+                setTimeout(function(){
+                    self.modal.add(self.modalHeader).add(self.modalBody).add(self.modalHeaderBg).add(self.modalBodyBg).attr('style', '');
+                }, 10);
+                setTimeout(function(){
+                    self.modal.removeClass('no-transition');
+                }, 20);
 
-		if( mq == 'mobile' ) {
-			//reset modal style on mobile
-			self.modal.add(self.modalHeader).add(self.modalHeaderBg).add(self.modalBody).add(self.modalBodyBg).attr('style', '');
-			self.modal.removeClass('no-transition');	
-			self.animating = false;	
-		} else if( mq == 'desktop' && self.element.hasClass('modal-is-open') ) {
-			self.modal.addClass('no-transition');
-			self.element.addClass('animation-completed');
-			var event = self.eventsGroup.find('.selected-event');
+                self.animating = false;
+                self.element.removeClass('content-loaded');
+                event.removeClass('selected-event');
+            });
+        }
 
-			var eventTop = event.offset().top - $(window).scrollTop(),
-				eventLeft = event.offset().left,
-				eventHeight = event.innerHeight(),
-				eventWidth = event.innerWidth();
+        //browser do not support transitions -> no need to wait for the end of it
+        if( !transitionsSupported ) self.modal.add(self.modalHeaderBg).trigger(transitionEnd);
+    }
 
-			var windowWidth = $(window).width(),
-				windowHeight = $(window).height();
+    SchedulePlan.prototype.mq = function(){
+        //get MQ value ('desktop' or 'mobile')
+        var self = this;
+        return window.getComputedStyle(this.element.get(0), '::before').getPropertyValue('content').replace(/["']/g, '');
+    };
 
-			var modalWidth = ( windowWidth*.8 > self.modalMaxWidth ) ? self.modalMaxWidth : windowWidth*.8,
-				modalHeight = ( windowHeight*.8 > self.modalMaxHeight ) ? self.modalMaxHeight : windowHeight*.8;
+    SchedulePlan.prototype.checkEventModal = function(device) {
+        this.animating = true;
+        var self = this;
+        var mq = this.mq();
 
-			var HeaderBgScaleY = modalHeight/eventHeight,
-				BodyBgScaleX = (modalWidth - eventWidth);
+        if( mq == 'mobile' ) {
+            //reset modal style on mobile
+            self.modal.add(self.modalHeader).add(self.modalHeaderBg).add(self.modalBody).add(self.modalBodyBg).attr('style', '');
+            self.modal.removeClass('no-transition');
+            self.animating = false;
+        } else if( mq == 'desktop' && self.element.hasClass('modal-is-open') ) {
+            self.modal.addClass('no-transition');
+            self.element.addClass('animation-completed');
+            var event = self.eventsGroup.find('.selected-event');
 
-			setTimeout(function(){
-				self.modal.css({
-					width: modalWidth+'px',
-					height: modalHeight+'px',
-					top: (windowHeight/2 - modalHeight/2)+'px',
-					left: (windowWidth/2 - modalWidth/2)+'px',
-				});
-				transformElement(self.modal, 'translateY(0) translateX(0)');
-				//change modal modalBodyBg height/width
-				self.modalBodyBg.css({
-					height: modalHeight+'px',
-					width: '1px',
-				});
-				transformElement(self.modalBodyBg, 'scaleX('+BodyBgScaleX+')');
-				//set modalHeader width
-				self.modalHeader.css({
-					width: eventWidth+'px',
-				});
-				//set modalBody left margin
-				self.modalBody.css({
-					marginLeft: eventWidth+'px',
-				});
-				//change modal modalHeaderBg height/width and scale it
-				self.modalHeaderBg.css({
-					height: eventHeight+'px',
-					width: eventWidth+'px',
-				});
-				transformElement(self.modalHeaderBg, 'scaleY('+HeaderBgScaleY+')');
-			}, 10);
+            var eventTop = event.offset().top - $(window).scrollTop(),
+                eventLeft = event.offset().left,
+                eventHeight = event.innerHeight(),
+                eventWidth = event.innerWidth();
 
-			setTimeout(function(){
-				self.modal.removeClass('no-transition');
-				self.animating = false;	
-			}, 20);
-		}
-	};
-    
-	$(window).on('resize', function(){
-		if( !windowResize ) {
-			windowResize = true;
-			(!window.requestAnimationFrame) ? setTimeout(checkResize) : window.requestAnimationFrame(checkResize);
-		}
-	});
+            var windowWidth = $(window).width(),
+                windowHeight = $(window).height();
 
-	$(window).keyup(function(event) {
-		if (event.keyCode == 27) {
-			objSchedulesPlan.forEach(function(element){
-				element.closeModal(element.eventsGroup.find('.selected-event'));
-			});
-		}
-	});
+            var modalWidth = ( windowWidth*.8 > self.modalMaxWidth ) ? self.modalMaxWidth : windowWidth*.8,
+                modalHeight = ( windowHeight*.8 > self.modalMaxHeight ) ? self.modalMaxHeight : windowHeight*.8;
 
-	function checkResize(){
-		objSchedulesPlan.forEach(function(element){
-			element.scheduleReset();
-		});
-		windowResize = false;
-	}
+            var HeaderBgScaleY = modalHeight/eventHeight,
+                BodyBgScaleX = (modalWidth - eventWidth);
 
-	function getScheduleTimestamp(time) {
-		//accepts hh:mm format - convert hh:mm to timestamp
-		time = time.replace(/ /g,'');
-		var timeArray = time.split(':');
-		var timeStamp = parseInt(timeArray[0])*60 + parseInt(timeArray[1]);
-		return timeStamp;
-	}
+            setTimeout(function(){
+                self.modal.css({
+                    width: modalWidth+'px',
+                    height: modalHeight+'px',
+                    top: (windowHeight/2 - modalHeight/2)+'px',
+                    left: (windowWidth/2 - modalWidth/2)+'px',
+                });
+                transformElement(self.modal, 'translateY(0) translateX(0)');
+                //change modal modalBodyBg height/width
+                self.modalBodyBg.css({
+                    height: modalHeight+'px',
+                    width: '1px',
+                });
+                transformElement(self.modalBodyBg, 'scaleX('+BodyBgScaleX+')');
+                //set modalHeader width
+                self.modalHeader.css({
+                    width: eventWidth+'px',
+                });
+                //set modalBody left margin
+                self.modalBody.css({
+                    marginLeft: eventWidth+'px',
+                });
+                //change modal modalHeaderBg height/width and scale it
+                self.modalHeaderBg.css({
+                    height: eventHeight+'px',
+                    width: eventWidth+'px',
+                });
+                transformElement(self.modalHeaderBg, 'scaleY('+HeaderBgScaleY+')');
+            }, 10);
 
-	function transformElement(element, value) {
-		element.css({
-		    '-moz-transform': value,
-		    '-webkit-transform': value,
-			'-ms-transform': value,
-			'-o-transform': value,
-			'transform': value
-		});
-	}
-    
+            setTimeout(function(){
+                self.modal.removeClass('no-transition');
+                self.animating = false;
+            }, 20);
+        }
+    };
+
+    $(window).on('resize', function(){
+        if( !windowResize ) {
+            windowResize = true;
+            (!window.requestAnimationFrame) ? setTimeout(checkResize) : window.requestAnimationFrame(checkResize);
+        }
+    });
+
+    $(window).keyup(function(event) {
+        if (event.keyCode == 27) {
+            objSchedulesPlan.forEach(function(element){
+                element.closeModal(element.eventsGroup.find('.selected-event'));
+            });
+        }
+    });
+
+    function checkResize(){
+        objSchedulesPlan.forEach(function(element){
+            element.scheduleReset();
+        });
+        windowResize = false;
+    }
+
+    function getScheduleTimestamp(time) {
+        //accepts hh:mm format - convert hh:mm to timestamp
+        time = time.replace(/ /g,'');
+        var timeArray = time.split(':');
+        var timeStamp = parseInt(timeArray[0])*60 + parseInt(timeArray[1]);
+        return timeStamp;
+    }
+
+    function transformElement(element, value) {
+        element.css({
+            '-moz-transform': value,
+            '-webkit-transform': value,
+            '-ms-transform': value,
+            '-o-transform': value,
+            'transform': value
+        });
+    }
+
     function displaySchedule(weeksFromNow)
     {
         populateSchedule(weeksFromNow).then(function() {
@@ -389,16 +389,16 @@ jQuery(document).ready(function($){
               objSchedulesPlan.push(newSchedule);
               //Place the new events here.
               newSchedule.placeEvents();
-        	   if( schedules.length > 0 ) {
-		          schedules.each(function(){
-			         //create SchedulePlan objects
-                     //TODO: Handle some sort of deletion of old objs
+              if( schedules.length > 0 ) {
+                  schedules.each(function(){
+                      //create SchedulePlan objects
+                      //TODO: Handle some sort of deletion of old objs
 
-		          });
-	           }
-        });
+                  });
+              }
+          });
     }
-    
+
     //Gets the first day of the current week. May need to change this for multiple weeks.
     function getDatesOfWeek(weeksFromNow)
     {
@@ -407,7 +407,7 @@ jQuery(document).ready(function($){
         var currentDay = new Date();
         //Take the current days month and subtract it by the number assigned to the day the date is assigned to. Date objects assume that getDay() is 1-6=Monday-Saturday and 0=Sunday, so this always returns the Sunday of the previous week
         currentDay.setDate(currentDay.getDate() - currentDay.getDay() + (weeksFromNow * 7) - 1);
-        
+
         //Loop for one whole week, setting the date to one day forward for 7 days total
         for( i = 0; i < 7; i++)
         {
@@ -428,7 +428,7 @@ jQuery(document).ready(function($){
         }
         return datesOfWeek;
     }
-    
+
     //Obtains the current time
     function getCurrentTime()
     {
@@ -445,7 +445,7 @@ jQuery(document).ready(function($){
         }
         return '#' + hours + "\\:" + minutes;
     }
-    
+
     function getCurrentMonthYear()
     {
         var currentDate = new Date();
@@ -453,7 +453,7 @@ jQuery(document).ready(function($){
         var year = currentDate.getFullYear();
         return MONTH_NAMES[monthIndex] + " " + year;
     }
-    
+
     //Parses date and returns a Date object with the correct date.
     function parseDate(date)
     {
@@ -462,11 +462,11 @@ jQuery(document).ready(function($){
         var splicedData = date.split("-");
         var year = splicedData[0];
         //Date creation assumes month is 0-based
-        var month = splicedData[1] - 1; 
+        var month = splicedData[1] - 1;
         var day = splicedData[2]
         return new Date(year, month, day);
     }
-    
+
     //Displays the day of the month of the current week on the schedule.
     //Also displays the current month and year based off of the first day in the week shown
     function displayDays(weekDates)
@@ -480,86 +480,90 @@ jQuery(document).ready(function($){
         {
             $("#date-label-" + i.toString()).html(weekDays[i].getDate());
         }
-        
+
         //Display Month and Year here
         $('#month_year_text').html(MONTH_NAMES[weekDays[0].getMonth()] + " " + weekDays[0].getFullYear());
     }
-    
+
     //Generates HTML for events on schedule
     function populateSchedule(weeksFromNow) {
         return new Promise(function (resolve, reject) {
-			var userEvents = JSON.parse($('#userEvents').val());
+            var userEvents = [];
+            if ($('#userEvents').val() != "null") {
+                userEvents = JSON.parse($('#userEvents').val());
+            }
+
             //Get the dates of the current week
             var currentWeekDates = getDatesOfWeek(weeksFromNow);
             displayDays(currentWeekDates);
-			console.log(userEvents);
-			userEvents.forEach(function(data) {
-				
-				if(currentWeekDates.includes(data.date))
-				{
-					var date = parseDate(data.date);
-					var newEvent = $('<li></li>').addClass('single-event');
-					var newHref = $('<a></a>');
-					var title = $('<em></em>').addClass('event-name');
-					newEvent.attr('data-start', data.timestart);
-					newEvent.attr('data-end', data.timeend);
-					if(!checkDate(data) == 1) {
-						newEvent.attr('data-event', 'event-active');
-					} else {
-						newEvent.attr('data-event', 'event-expired');
-					}
+            console.log(userEvents);
+            userEvents.forEach(function(data) {
 
-					newHref.attr('href', 'viewevent.php?id=' + data.id);
-					title.html(data.title);
-					newHref.append(title);
-					newEvent.append(newHref);
-					if(date.getDay() == 1)
-					{
-						$('#MondayInfo').append(newEvent);
-					}
-					else if(date.getDay() == 2)
-					{
-						$('#TuesdayInfo').append(newEvent);
-					}
-					else if(date.getDay() == 3)
-					{
-						$('#WednesdayInfo').append(newEvent);
-					}
-					else if(date.getDay() == 4)
-					{
-						$('#ThursdayInfo').append(newEvent);
-					}
-					else if(date.getDay() == 5)
-					{
-						$('#FridayInfo').append(newEvent);
-					}
-					else if(date.getDay() == 6)
-					{
-						$('#SaturdayInfo').append(newEvent);
-					}
-					else if(date.getDay() == 0)
-					{
-						$('#SundayInfo').append(newEvent);
-					}
-						//detect click on the event and open the modal
-					$(newEvent).on('click', 'a', function(event){
-						fillEventInfo(eventData)
-					});
-					
-				}
+                if(currentWeekDates.includes(data.date))
+                {
+                    var date = parseDate(data.date);
+                    var newEvent = $('<li></li>').addClass('single-event');
+                    var newHref = $('<a></a>');
+                    var title = $('<em></em>').addClass('event-name');
+                    newEvent.attr('data-start', data.timestart);
+                    newEvent.attr('data-end', data.timeend);
+                    if(!checkDate(data) == 1) {
+                        newEvent.attr('data-event', 'event-active');
+                    } else {
+                        newEvent.attr('data-event', 'event-expired');
+                    }
 
-			});
-			return resolve();
+                    newHref.attr('href', 'viewevent.php?id=' + data.id);
+                    title.html(data.title);
+                    newHref.append(title);
+                    newEvent.append(newHref);
+                    if(date.getDay() == 1)
+                    {
+                        $('#MondayInfo').append(newEvent);
+                    }
+                    else if(date.getDay() == 2)
+                    {
+                        $('#TuesdayInfo').append(newEvent);
+                    }
+                    else if(date.getDay() == 3)
+                    {
+                        $('#WednesdayInfo').append(newEvent);
+                    }
+                    else if(date.getDay() == 4)
+                    {
+                        $('#ThursdayInfo').append(newEvent);
+                    }
+                    else if(date.getDay() == 5)
+                    {
+                        $('#FridayInfo').append(newEvent);
+                    }
+                    else if(date.getDay() == 6)
+                    {
+                        $('#SaturdayInfo').append(newEvent);
+                    }
+                    else if(date.getDay() == 0)
+                    {
+                        $('#SundayInfo').append(newEvent);
+                    }
+                    //detect click on the event and open the modal
+                    $(newEvent).on('click', 'a', function(event){
+                        fillEventInfo(eventData)
+                    });
 
-		});                    
+                }
+
+            });
+            return resolve();
+
+        });
     }
-    
+
     function displayWeek(week)
     {
         $('.single-event').remove();
         displaySchedule(week);
     }
-    
+
     //Helper function to fill event modal data with the correct event information
     function fillEventInfo(data)
     {
@@ -567,83 +571,83 @@ jQuery(document).ready(function($){
         $('#eventID').css("display", "none");
         $('#eventID').html(data.eventID);
         var dateCheckResult = checkDate(data);
-    
+
         if(dateCheckResult === 0) //event is before current time
         {
              //mark event as expired and remove edit button
             $('#editEvent').css("display", "none");
-    
+
             $('#expiredSpan').css("display", "block");
-    
+
             $('.modalContent').addClass("expiredEvent");
         }
         else
         {
             $('#editEvent').css("display", "inline-block");
-    
+
             $('#expiredSpan').css("display", "none");
-    
-            $('.modalContent').removeClass("expiredEvent");        
+
+            $('.modalContent').removeClass("expiredEvent");
         }
-        
+
         var eventText = $('#event-text').text(
         "Title: " + data.eventTitle + "\n" +
         "Owner: " + data.eventOwner + "\n" +
         "Description: " + data.eventDescription + "\n" +
-        "Privacy: " + data.privacySetting + "\n"); 
+        "Privacy: " + data.privacySetting + "\n");
         eventText.html(eventText.html().replace(/\n/g,'</br>'));
     }
-    
+
     //This will create schedule plan objects
-	var schedules = $('.cd-schedule');
-	var objSchedulesPlan = [],
-		windowResize = false;
+    var schedules = $('.cd-schedule');
+    var objSchedulesPlan = [],
+        windowResize = false;
     //Populate the schedule with events
     displaySchedule(currentWeek);
     //Scrolls the schedule down to the current time today.
-    var offset = $(getCurrentTime()).offset().top - $('#schedule').offset().top;      
+    var offset = $(getCurrentTime()).offset().top - $('#schedule').offset().top;
     $('#schedule').animate({scrollTop: offset}, 'slow');
 });
 
 
 function checkDate(event) {
-	var eventDate = new Date(event.date);
-	var eventYear = eventDate.getFullYear();
-	var eventMonth = eventDate.getMonth() +1;
-	var eventDay = eventDate.getDate();
+    var eventDate = new Date(event.date);
+    var eventYear = eventDate.getFullYear();
+    var eventMonth = eventDate.getMonth() +1;
+    var eventDay = eventDate.getDate();
     var endTime = event.timeend;
 
     var today = new Date();
     var dd = today.getDate();
     var mm = today.getMonth()+1;
     var yyyy = today.getFullYear();
-	var hh = today.getHours();
-	var mm = today.getMinutes();
+    var hh = today.getHours();
+    var mm = today.getMinutes();
     if(dd < 10) {
         dd = '0' + dd;
     }
     if(mm < 10) {
         mm = '0' + mm;
-	}
-	if(hh < 10) {
-		hh = '0' + hh;
-	}
-	if(mm < 10) {
-		mm = '0' + mm;
-	}
-	var time = hh +":"+ mm;
-	if(eventYear == yyyy) {
-		if(eventMonth == mm) {
-			if(eventDay == dd) { //date is the same as current day
-				if(endTime < time) {
-					return 0;
-				} else {
-					return 1;
-				}
-			} else if(eventDay > dd) {  //date is after current day
-				return 1;
-			}
-		} 
-	}
-	return 0;
+    }
+    if(hh < 10) {
+        hh = '0' + hh;
+    }
+    if(mm < 10) {
+        mm = '0' + mm;
+    }
+    var time = hh +":"+ mm;
+    if(eventYear == yyyy) {
+        if(eventMonth == mm) {
+            if(eventDay == dd) { //date is the same as current day
+                if(endTime < time) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            } else if(eventDay > dd) {  //date is after current day
+                return 1;
+            }
+        }
+    }
+    return 0;
 };
