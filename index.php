@@ -361,7 +361,7 @@ if ($user->isLoggedIn()) {
             <div class="sidebar-header">
                 <h3>Menu</h3>
                 <div class="img-collapse">
-                    <img src="img/penme.png" alt="PenMe">
+                    <img src="img/penme.png" alt="Meeting-Scheduler">
                 </div>
             </div>
 
@@ -403,16 +403,16 @@ if ($user->isLoggedIn()) {
             </ul>
         </nav>
     </div>
-    <input type="hidden" id="userEvents" value='<?php
+    <?php
+        $json = "[]";
         if($userEvents && $attendens) {
-            echo json_encode(array_merge($userEvents, $attendens));
+            $json = json_encode(array_merge($userEvents, $attendens));
         } else if($userEvents) {
-            echo json_encode($userEvents);
+            $json = json_encode($userEvents);
         } else if($attendens) {
-            echo json_encode($attendens);
-        } else {
-            echo '';
-        } ?>'>
+            $json = json_encode($attendens);
+        } ?>
+    <input type="hidden" id="userEvents" value='<?php echo $json;?>'>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/events.js"></script>
 
