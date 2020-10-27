@@ -119,18 +119,6 @@
             ?>
         </div>
 
-        <div>
-
-            <!-- put other service sign in providers here (facebook, google) -->
-            <div class="providers">
-
-                <h2>
-                    <span class="dividerText"> OR </span>
-                </h2>
-
-            </div>
-        </div>
-
     </div>
     <script type="text/javascript" src="js/index.js"></script>
 
