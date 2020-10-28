@@ -20,5 +20,3 @@ To use:
 4. Make sure you have a webserver. I´m using XAMPP 7.3.8-2. Go to link: https://www.apachefriends.org/download.html and download XXAMPP. Then go to Manage Servers and make sure Apache web server is running. Click on Configure and choose a port. I´m using port 8080.
 5. Then go to your localhost where you have stored the project using the right port. My adress is http://localhost:8080/dbwebb/meeting-scheduler/. 
 
-6 Done!
-
