@@ -406,7 +406,7 @@ if ($user->isLoggedIn()) {
     <?php
         $json = "[]";
         if($userEvents && $attendens) {
-            $json = json_encode(array_merge($userEvents, $attendens));
+            $json = json_encode(@array_merge($userEvents, $attendens));
         } else if($userEvents) {
             $json = json_encode($userEvents);
         } else if($attendens) {
