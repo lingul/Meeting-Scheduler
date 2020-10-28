@@ -14,4 +14,10 @@ Voting: Invited participants can vote on meetings.
 
 View event: The host of the event can see the votes and who voted what.
 
-To use: Download the project and setup the database. Just run the file metadata.ddl in mysql and the database is set. Make sure you have a web-server. If you want to have a look at my ER-digram it´s called modaldb.png and can be found under img.
+To use: 
+1. Download the project. Link: https://github.com/lingul/Meeting-Scheduler/tree/master
+2. Setup the database. You will need mysql. I´m using version 8. Run mysql -h localhost -u root -p < metadata.ddl to create the database. If you want to have a look at the databse after setup you can login to the database by typing mysql -h localhost -u poll -p poll (with the password poll) in the Terminal.
+4. Make sure you have a webserver. I´m using XAMPP 7.3.8-2. Go to link: https://www.apachefriends.org/download.html and download XXAMPP. Then go to Manage Servers and make sure Apache web server is running. Click on Configure and choose a port. I´m using port 8080.
+5. Then go to your localhost where you have stored the project using the right port. My adress is http://localhost:8080/dbwebb/meeting-scheduler/. 
+6 Done!
+
