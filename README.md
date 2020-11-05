@@ -30,7 +30,7 @@ git clone https://github.com/lingul/Meeting-Scheduler.git
 
 # Download the database.
 2. Go to the mysql webpage:
-You will need the mysql databse. Go to https://dev.mysql.com/downloads/mysql/ if you need to install mysql. I´m using version 8. 
+You will need the mysql database. Go to https://dev.mysql.com/downloads/mysql/ if you need to install mysql. I´m using version 8. 
 
 # Setup the database.
 3. Open up your terminal and do the following:
