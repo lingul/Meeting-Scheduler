@@ -24,22 +24,22 @@ View event: The host of the event can see the votes and who voted what.
 **Make sure that you have mysql database installed**
 
 The commands below are based on Mac OS. Change the commands accordingly if you're using another system.
-1. Open up your terminal and do the following:
 # Clone the repo
+1. Open up your terminal and do the following:
 git clone https://github.com/lingul/Meeting-Scheduler.git
 
-2. Go to the mysql webpage:
 # Download the database.
+2. Go to the mysql webpage:
 You will need the mysql databse. Go to https://dev.mysql.com/downloads/mysql/ if you need to install mysql. I´m using version 8. 
 
-3. Open up your terminal and do the following:
 # Setup the database.
+3. Open up your terminal and do the following:
 Run mysql -h localhost -u root -p < metadata.ddl to setup your database.
 
-4. Go to the apache webpage:
 # Make sure you have a webserver.
+4. Go to the apache webpage:
 I´m using XAMPP 7.3.8-2. Go to the link: https://www.apachefriends.org/download.html and download XXAMPP. Then go to Manage Servers and make sure Apache web server is running. Click on Configure and choose a port. I´m using port 8080.
 
-5. Go to localhost
 # Done.
+5. Go to localhost
 * Go to `http://localhost:8080`
